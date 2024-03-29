@@ -9,10 +9,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="aero" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="calc_path" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Windows\System32\calc1.exe</Value>
+    </Setting>
+    <Setting Name="isBlur" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

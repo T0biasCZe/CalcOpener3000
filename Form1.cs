@@ -47,11 +47,25 @@ namespace CalcOpener3000 {
 				label_aero.Visible = aero;
 				autostart = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true).GetValue("CalcOpener3000") != null;
 				linkLabel_autostart.Text = autostart ? "autostart: on" : "autostart: off";
+				isBlur = Settings.Default.isBlur;
+				if(Environment.OSVersion.Version.Major < 10) {
+					isBlur = true;
+				}
+				if(Environment.OSVersion.Version.Major < 6) {
+					aero = false;
+				}
+
 				if(aero) {
 					this.Text = "";
 					label_numlock.ForeColor = Color.WhiteSmoke;
 					checkBox_nomultiplecalcs.ForeColor = Color.WhiteSmoke;
 					checkBox_opencalc.ForeColor = Color.WhiteSmoke;
+					textBox1.ForeColor = Color.WhiteSmoke;
+					label_aero.ForeColor = Color.WhiteSmoke;
+					foreach(Control c in this.Controls) {
+						c.Top -= 10;
+					}
+					this.Height -= 10;
 				}
 			}
 			catch(Exception ex) {
@@ -60,8 +74,10 @@ namespace CalcOpener3000 {
 		}
 		protected override void OnHandleCreated(EventArgs e) {
 			// Use e.g. Color.FromArgb(128, Color.Lime) for a 50% opacity green tint.
-			if(aero)
-				AeroUtil.EnableAcrylic(this, Color.Transparent);
+			if(aero) { 
+				if(isBlur) AeroUtil.EnableAcrylic(this, Color.Transparent, AeroUtil.ACCENT.ENABLE_BLURBEHIND);
+				else AeroUtil.EnableAcrylic(this, Color.Transparent, AeroUtil.ACCENT.ENABLE_ACRYLICBLURBEHIND);
+			}
 
 			base.OnHandleCreated(e);
 		}
@@ -98,8 +114,11 @@ namespace CalcOpener3000 {
 		}
 
 
-		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e) {
+		private void notifyIcon1_Click(object sender, EventArgs e) {
+			if(((MouseEventArgs)e).Button == MouseButtons.Right) return;
 			this.Show();
+			FocusProcess("CalcOpener3000");
+			this.Focus();
 		}
 
 		private void Form1_Leave(object sender, EventArgs e) {
@@ -110,7 +129,7 @@ namespace CalcOpener3000 {
 			Application.Exit();
 		}
 		private bool autostart = false;
-		private void linkLabel_autostart_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+		private void linkLabel_autostart_LinkClicked(object sender, EventArgs e) {
 			bool autostart_status = show_taskdialog_autostart(autostart);
 
 			if(autostart_status) {
@@ -134,7 +153,7 @@ namespace CalcOpener3000 {
 
 		private List<Keys> konamiCode = new List<Keys> { Keys.Up, Keys.Up, Keys.Down, Keys.Down, Keys.Left, Keys.Right, Keys.Left, Keys.Right, Keys.B, Keys.A };
 		private int konamiIndex = 0;
-		bool aero = false;
+		static bool aero = false;
 		private void konami(Keys KeyCode) {
 			if(KeyCode == konamiCode[konamiIndex]) {
 				konamiIndex++;
@@ -279,6 +298,89 @@ namespace CalcOpener3000 {
 				return result == buttonYes;
 			}
 
+		}
+
+		public class MyTextBox : TextBox {
+			public MyTextBox() {
+				SetStyle(ControlStyles.UserPaint, true);
+			}
+			protected override void OnPaint(PaintEventArgs e) {
+				base.OnPaint(e);
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+				if(aero) {
+
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 1, 1);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 0, 2);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 2, 0);
+				}
+				e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), 0, 0);
+			}
+			protected override void OnTextChanged(EventArgs e) {
+				base.OnTextChanged(e);
+				Refresh();
+			}
+			protected override void OnClick(EventArgs e) {
+				base.OnClick(e);
+				SelectionStart = Text.Length;
+				Refresh();
+			}
+
+		}
+		public class MyLabel : Label {
+			public MyLabel() {
+				SetStyle(ControlStyles.UserPaint, true);
+			}
+			protected override void OnPaint(PaintEventArgs e) {
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+				if(aero) {
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 1, 1);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 0, 2);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 2, 0);
+				}
+				e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), 0, 0);
+			}
+		}
+		public class MyLinkLabel : Label {
+			public MyLinkLabel() {
+				//SetStyle(ControlStyles.UserPaint, true);
+			}
+			protected override void OnPaint(PaintEventArgs e) {
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+				if(aero) {
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 64)), 1, 1);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 64)), 0, 2);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 64)), 2, 0);
+				}
+				e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), 0, 0);
+				e.Graphics.DrawLine(new Pen(ForeColor), 0, 13, Width, 13);
+			}
+		}
+		public class MyCheckBox : CheckBox {
+			public MyCheckBox() {
+				SetStyle(ControlStyles.UserPaint, true);
+			}
+			protected override void OnPaint(PaintEventArgs e) {
+				base.OnPaint(e);
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+				if(aero) {
+					//draw fake shadow before drawing text
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 17, 1);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 16, 2);
+					e.Graphics.DrawString(Text, Font, new SolidBrush(Color.FromArgb(255, 0, 0, 0)), 18, 0);
+				}
+				e.Graphics.DrawString(Text, Font, new SolidBrush(ForeColor), 16, 0);
+			}
+		}
+
+		bool isBlur = false;
+		private void label_aero_Click(object sender, EventArgs e) {
+			if(label_aero.Visible) {
+				isBlur = !isBlur;
+				Settings.Default.isBlur = isBlur;
+				Settings.Default.Save();
+
+				Application.Restart();
+			}
 		}
 	}
 }

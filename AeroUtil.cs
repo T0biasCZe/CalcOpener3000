@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 public class AeroUtil {
 	public static void EnableAcrylic(IWin32Window window, Color blurColor) {
+		EnableAcrylic(window, blurColor, ACCENT.ENABLE_ACRYLICBLURBEHIND);
+	}
+	public static void EnableAcrylic(IWin32Window window, Color blurColor, ACCENT accent) {
 		if(window is null) throw new ArgumentNullException(nameof(window));
 
 		var accentPolicy = new AccentPolicy {
-			AccentState = ACCENT.ENABLE_ACRYLICBLURBEHIND,
+			AccentState = accent,
 			GradientColor = ToAbgr(blurColor)
 		};
 
@@ -51,7 +54,7 @@ public class AeroUtil {
 		ACCENT_POLICY = 19
 	}
 
-	private enum ACCENT {
+	public enum ACCENT {
 		DISABLED = 0,
 		ENABLE_GRADIENT = 1,
 		ENABLE_TRANSPARENTGRADIENT = 2,

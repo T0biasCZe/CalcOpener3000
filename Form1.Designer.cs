@@ -25,17 +25,17 @@
 		private void InitializeComponent() {
 			components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-			checkBox_opencalc = new CheckBox();
+			checkBox_opencalc = new MyCheckBox();
 			timer = new System.Windows.Forms.Timer(components);
-			textBox1 = new TextBox();
+			textBox1 = new MyTextBox();
 			toolTip1 = new ToolTip(components);
-			checkBox_nomultiplecalcs = new CheckBox();
-			label_aero = new Label();
-			label_numlock = new Label();
+			checkBox_nomultiplecalcs = new MyCheckBox();
+			label_aero = new MyLabel();
+			label_numlock = new MyLabel();
 			notifyIcon1 = new NotifyIcon(components);
 			contextMenuStrip1 = new ContextMenuStrip(components);
 			exitToolStripMenuItem = new ToolStripMenuItem();
-			linkLabel_autostart = new LinkLabel();
+			linkLabel_autostart = new MyLinkLabel();
 			contextMenuStrip1.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -93,6 +93,7 @@
 			label_aero.TabIndex = 4;
 			label_aero.Text = "aero on";
 			label_aero.Visible = false;
+			label_aero.Click += label_aero_Click;
 			// 
 			// label_numlock
 			// 
@@ -111,7 +112,7 @@
 			notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
 			notifyIcon1.Text = "notifyIcon1";
 			notifyIcon1.Visible = true;
-			notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
+			notifyIcon1.Click += notifyIcon1_Click;
 			// 
 			// contextMenuStrip1
 			// 
@@ -129,13 +130,14 @@
 			// linkLabel_autostart
 			// 
 			linkLabel_autostart.AutoSize = true;
-			linkLabel_autostart.Location = new Point(8, 96);
+			linkLabel_autostart.ForeColor = Color.FromArgb(0, 64, 255);
+			linkLabel_autostart.Location = new Point(8, 94);
 			linkLabel_autostart.Name = "linkLabel_autostart";
 			linkLabel_autostart.Size = new Size(75, 15);
 			linkLabel_autostart.TabIndex = 6;
 			linkLabel_autostart.TabStop = true;
 			linkLabel_autostart.Text = "autostart: off";
-			linkLabel_autostart.LinkClicked += linkLabel_autostart_LinkClicked;
+			linkLabel_autostart.Click += linkLabel_autostart_LinkClicked;
 			// 
 			// Form1
 			// 
@@ -163,16 +165,16 @@
 
 		#endregion
 
-		private CheckBox checkBox_opencalc;
+		private MyCheckBox checkBox_opencalc;
 		private System.Windows.Forms.Timer timer;
-		private TextBox textBox1;
+		private MyTextBox textBox1;
 		private ToolTip toolTip1;
-		private CheckBox checkBox_nomultiplecalcs;
-		private Label label_aero;
-		private Label label_numlock;
+		private MyCheckBox checkBox_nomultiplecalcs;
+		private MyLabel label_aero;
+		private MyLabel label_numlock;
 		private NotifyIcon notifyIcon1;
 		private ContextMenuStrip contextMenuStrip1;
 		private ToolStripMenuItem exitToolStripMenuItem;
-		private LinkLabel linkLabel_autostart;
+		private MyLinkLabel linkLabel_autostart;
 	}
 }

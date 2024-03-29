@@ -49,7 +49,7 @@ namespace CalcOpener3000.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool aero {
             get {
                 return ((bool)(this["aero"]));
@@ -68,6 +68,18 @@ namespace CalcOpener3000.Properties {
             }
             set {
                 this["calc_path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool isBlur {
+            get {
+                return ((bool)(this["isBlur"]));
+            }
+            set {
+                this["isBlur"] = value;
             }
         }
     }
