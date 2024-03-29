@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using Timer = System.Windows.Forms.Timer;
+using Microsoft.Win32;
+using System.Media;
 
 namespace CalcOpener3000 {
 	public partial class Form1 : Form {
@@ -43,6 +45,8 @@ namespace CalcOpener3000 {
 				checkBox_nomultiplecalcs.Checked = Settings.Default.dontopenmultiplecalcs;
 				aero = Settings.Default.aero;
 				label_aero.Visible = aero;
+				autostart = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true).GetValue("CalcOpener3000") != null;
+				linkLabel_autostart.Text = autostart ? "autostart: on" : "autostart: off";
 				if(aero) {
 					this.Text = "";
 					label_numlock.ForeColor = Color.WhiteSmoke;
@@ -93,6 +97,41 @@ namespace CalcOpener3000 {
 			}
 		}
 
+
+		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e) {
+			this.Show();
+		}
+
+		private void Form1_Leave(object sender, EventArgs e) {
+			this.Hide();
+		}
+
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
+			Application.Exit();
+		}
+		private bool autostart = false;
+		private void linkLabel_autostart_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+			bool autostart_status = show_taskdialog_autostart(autostart);
+
+			if(autostart_status) {
+				linkLabel_autostart.Text = "autostart: on";
+				//register the autostart
+				RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+				rk.SetValue("CalcOpener3000", Application.ExecutablePath.ToString());
+			}
+			else {
+				autostart = false;
+				linkLabel_autostart.Text = "autostart: off";
+				//unregister the autostart
+				RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+				rk.DeleteValue("CalcOpener3000", false);
+			}
+
+			this.Show();
+			this.Focus();
+		}
+
+
 		private List<Keys> konamiCode = new List<Keys> { Keys.Up, Keys.Up, Keys.Down, Keys.Down, Keys.Left, Keys.Right, Keys.Left, Keys.Right, Keys.B, Keys.A };
 		private int konamiIndex = 0;
 		bool aero = false;
@@ -111,12 +150,14 @@ namespace CalcOpener3000 {
 		private void konami_triggered() {
 			var result = MessageBox.Show("Konami code triggered!\n" +
 				"Do you want to toggle Acrylic? Current status: " + (aero ? "ON" : "OFF") + "\n" +
-				"Changes will be visible after restart", "ACRYLIC", MessageBoxButtons.YesNo);
+				"Changes will be visible after restartìšøèžýø", "ACRYLIC", MessageBoxButtons.YesNo);
 			if(result == DialogResult.Yes) {
 				aero = !aero;
 
 			}
 		}
+
+
 
 
 		//LOW LEVEL MAGIC, DONT ASK
@@ -205,16 +246,39 @@ namespace CalcOpener3000 {
 			}
 		}
 
-		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e) {
-			this.Show();
-		}
+		private void button1_Click(object sender, EventArgs e) {
 
-		private void Form1_Leave(object sender, EventArgs e) {
-			this.Hide();
 		}
+		private bool show_taskdialog_autostart(bool current_status) {
+			TaskDialogButton buttonYes = new("Yes");
+			TaskDialogButton buttonNo = new("No");
+			TaskDialogExpander expander = new() {
+				Position = TaskDialogExpanderPosition.AfterFootnote,
+				Text = current_status ? "This will stop the app from auto starting when you login into Windows" : "This will autostart the app when you login into Windows. \nPlease note that this doesnt copy the program anywhere. Do not delete or move the app files anywhere, as that would prevent the app from auto starting. \nIf you need instructions on how to fix the autostart after deleting the files, check out the enclosed instruction book"
+			};
+			TaskDialogPage page = new() {
+				Heading = "Autostart",
+				Text = current_status ? "Do you want to disable autostart?" : "Do you want to enable autostart?",
+				Icon = TaskDialogIcon.Information,
+				Caption = "Caption",
+				Buttons = { buttonYes, buttonNo },
+				Expander = expander
+			};
 
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e) {
-			Application.Exit();
+			SoundPlayer player = new SoundPlayer(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("CalcOpener3000.notify.wav"));
+			player.Play();
+
+			var result = TaskDialog.ShowDialog(page);
+
+
+			//return whether yes or no button was clicked
+			if(current_status) {
+				return result == buttonNo;
+			}
+			else {
+				return result == buttonYes;
+			}
+
 		}
 	}
 }

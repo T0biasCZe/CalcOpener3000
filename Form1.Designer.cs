@@ -35,6 +35,7 @@
 			notifyIcon1 = new NotifyIcon(components);
 			contextMenuStrip1 = new ContextMenuStrip(components);
 			exitToolStripMenuItem = new ToolStripMenuItem();
+			linkLabel_autostart = new LinkLabel();
 			contextMenuStrip1.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -125,16 +126,28 @@
 			exitToolStripMenuItem.Text = "Exit";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 
+			// linkLabel_autostart
+			// 
+			linkLabel_autostart.AutoSize = true;
+			linkLabel_autostart.Location = new Point(8, 96);
+			linkLabel_autostart.Name = "linkLabel_autostart";
+			linkLabel_autostart.Size = new Size(75, 15);
+			linkLabel_autostart.TabIndex = 6;
+			linkLabel_autostart.TabStop = true;
+			linkLabel_autostart.Text = "autostart: off";
+			linkLabel_autostart.LinkClicked += linkLabel_autostart_LinkClicked;
+			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(238, 106);
+			ClientSize = new Size(238, 110);
 			Controls.Add(label_numlock);
 			Controls.Add(label_aero);
 			Controls.Add(checkBox_nomultiplecalcs);
 			Controls.Add(textBox1);
 			Controls.Add(checkBox_opencalc);
+			Controls.Add(linkLabel_autostart);
 			ForeColor = Color.Black;
 			MaximizeBox = false;
 			MinimizeBox = false;
@@ -160,5 +173,6 @@
 		private NotifyIcon notifyIcon1;
 		private ContextMenuStrip contextMenuStrip1;
 		private ToolStripMenuItem exitToolStripMenuItem;
+		private LinkLabel linkLabel_autostart;
 	}
 }
